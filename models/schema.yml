@@ -1,0 +1,94 @@
+version: 2
+
+sources:
+  - name: bqhspa
+    description: HRSA designated shortage areas
+    database: bigquery-public-data
+    schema: sdoh_hrsa_shortage_areas
+    tables:
+      - name: hspa
+        identifier: hpsa_primary_care
+  - name: bqcensus
+    description: > 
+      Census Bureau mapping of FIPS codes to county and state names
+    database: bigquery-public-data
+    schema: census_utility
+    tables:
+      - name: fips
+        identifier: fips_codes_all
+  - name: bqjhu
+    description: > 
+      Daily COVID case and death statistics by county 
+      from the Johns Hopkins University CSSE
+    database: bigquery-public-data
+    schema: covid19_jhu_csse
+    tables:
+      - name: actual
+        identifier: summary    
+  - name: bqpred
+    description: Forecasted case and death statistics
+    database: bigquery-public-data
+    schema: covid19_public_forecasts
+    tables:
+      - name: pred
+        identifier: county_28d_historical   
+
+models:
+  - name: actual
+    description: >
+      Actual COVID cases and deaths by county
+    columns: &basetest
+      - name: id
+        tests:
+          - unique
+          - not_null
+      - name: cd_county
+        tests:
+          - relationships:
+              to: ref('fips')
+              field: cd_county
+  - name: prediction
+    description: > 
+      Predicted COVID cases and deaths by county
+    columns: *basetest
+  - name: hspa
+    description: >
+      Counties designated as healthcare shortage areas
+    columns:
+      - name: cd_county
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('fips')
+              field: cd_county
+  - name: fips
+    description: > 
+      Mapping of county and state names from FIPS codes
+    columns:
+      - name: cd_county
+        tests:
+          - unique
+          - not_null 
+  - name: model_monitor_staging
+    description: >
+      Staging table to combine different data sources
+  - name: model_monitor
+    description: >
+      Final model monitoring table with one row per county x observed day
+    columns:
+      - name: id
+        test:
+        - unique
+        - not_null
+      - name: ind_county_hspa
+        tests:
+        - not_null
+        - accepted_values:
+            values: [0,1]  
+            quote: false   
+      - name: prop_county_hspa
+        tests:
+          - dbt_utils.not_null_where:
+              where: "ind_county_hspa = 1"
+  
