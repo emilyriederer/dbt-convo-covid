@@ -51,7 +51,7 @@ models:
     description: > 
       Predicted COVID cases and deaths by county
     columns: *basetest
-  - name: hspa
+  - name: hpsa
     description: >
       Counties designated as healthcare shortage areas
     columns:

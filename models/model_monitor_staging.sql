@@ -19,7 +19,7 @@ from
   {{ ref('fips') }} as fips
   using (cd_county)
   left join
-  {{ ref('hspa') }} as hspa
+  {{ ref('hpsa') }} as hspa
   using (cd_county)
 {% if is_incremental() %}
 where dt_county >= (
