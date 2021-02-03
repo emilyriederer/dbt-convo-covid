@@ -6,7 +6,7 @@ sources:
     database: bigquery-public-data
     schema: sdoh_hrsa_shortage_areas
     tables:
-      - name: hspa
+      - name: hpsa
         identifier: hpsa_primary_care
   - name: bqcensus
     description: > 
