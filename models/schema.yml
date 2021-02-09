@@ -81,14 +81,14 @@ models:
         test:
         - unique
         - not_null
-      - name: ind_county_hspa
+      - name: ind_county_hpsa
         tests:
         - not_null
         - accepted_values:
             values: [0,1]  
             quote: false   
-      - name: prop_county_hspa
+      - name: prop_county_hpsa
         tests:
           - dbt_utils.not_null_where:
-              where: "ind_county_hspa = 1"
+              where: "ind_county_hpsa = 1"
   
