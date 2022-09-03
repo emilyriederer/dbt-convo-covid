@@ -1,12 +1,9 @@
-{% set cols = get_column_names( ref('model_monitor') ) %}
-{% set cols_n = get_matches(cols, '^n_.*') %}
+{% set cols = dbtplyr.get_column_names( ref('model_monitor') ) %}
+{% set cols_n = dbtplyr.starts_with('n_', cols) %}
 
 select *   
 from {{ ref('model_monitor') }}
 where
-   {%- for c in cols_n %} ({{c}} is null) or
-   {% endfor %}
-   FALSE
-
-
+  {{ dbtplyr.if_any(cols_n, "{{var}} is null") }} or 
+  FALSE
   
